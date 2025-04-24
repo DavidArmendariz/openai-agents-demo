@@ -48,6 +48,7 @@ legal_agent = Agent(
     instructions=agent_prompt,
     tools=[get_current_time_tool, schedule_meeting_tool],
     model_settings=ModelSettings(max_tokens=300),
+    model="gpt-4o-mini",
 )
 
 __all__ = ["legal_agent"]
