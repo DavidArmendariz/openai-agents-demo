@@ -10,3 +10,6 @@ run:
   network:
     port: 8000
     env: PORT
+  env:
+    - name: OPENAI_API_KEY
+      value: "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"
