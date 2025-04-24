@@ -1,13 +1,11 @@
 import json
 import logging
 import os
-import ssl
 import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
 import aiohttp
-import certifi
 from azure.identity.aio import ClientSecretCredential
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -37,12 +35,7 @@ SCOPES = ["https://graph.microsoft.com/.default"]
 
 async def get_access_token():
     """Get an access token for Microsoft Graph API"""
-    # Create an SSL context that uses the certifi certificate bundle
-    ssl_context = ssl.create_default_context(cafile=certifi.where())
-
-    credentials = ClientSecretCredential(
-        TENANT_ID, CLIENT_ID, CLIENT_SECRET, ssl_context=ssl_context
-    )
+    credentials = ClientSecretCredential(TENANT_ID, CLIENT_ID, CLIENT_SECRET)
     token = await credentials.get_token(*SCOPES)
     await credentials.close()  # Close the credential client
     return token.token
@@ -87,9 +80,7 @@ async def schedule_meeting(event_data) -> dict[str, Any]:
             "Content-Type": "application/json",
         }
 
-        # Create a client session with SSL verification using certifi
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        connector = aiohttp.TCPConnector(ssl=ssl_context)
+        connector = aiohttp.TCPConnector()
         session = aiohttp.ClientSession(connector=connector)
 
         try:
