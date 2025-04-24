@@ -3,10 +3,9 @@ runtime: python3
 build:
   commands:
     build:
-      - curl -sSL https://pdm-project.org/install-pdm.py | python -
-      - pdm install
+      - pip install -r requirements.txt
 run:
-  command: pdm start_prod
+  command: uvicorn src.main:app --host 0.0.0.0 --port 8000
   network:
     port: 8000
     env: APP_PORT
