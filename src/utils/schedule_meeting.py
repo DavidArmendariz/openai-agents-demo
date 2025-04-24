@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import aiohttp
-import certifi
 from azure.identity.aio import ClientSecretCredential
 from dotenv import load_dotenv
 from twilio.rest import Client
@@ -36,7 +35,6 @@ SCOPES = ["https://graph.microsoft.com/.default"]
 
 async def get_access_token():
     """Get an access token for Microsoft Graph API"""
-    print("Certificate", certifi.where())
     credentials = ClientSecretCredential(TENANT_ID, CLIENT_ID, CLIENT_SECRET)
     token = await credentials.get_token(*SCOPES)
     await credentials.close()  # Close the credential client
