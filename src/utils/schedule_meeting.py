@@ -7,13 +7,9 @@ from typing import Any
 
 import requests
 from azure.identity import ClientSecretCredential
-from dotenv import load_dotenv
 from twilio.rest import Client
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
-load_dotenv()
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
@@ -34,9 +30,11 @@ SCOPES = ["https://graph.microsoft.com/.default"]
 def get_access_token():
     """Get an access token for Microsoft Graph API"""
     # Using synchronous ClientSecretCredential
-    credentials = ClientSecretCredential(TENANT_ID, CLIENT_ID, CLIENT_SECRET)
-    token = credentials.get_token(*SCOPES)
-    return token.token
+    client_secret_credential = ClientSecretCredential(
+        TENANT_ID, CLIENT_ID, CLIENT_SECRET
+    )
+    credentials = client_secret_credential.get_token(*SCOPES)
+    return credentials.token
 
 
 def send_whatsapp_message(recipient, join_url):
