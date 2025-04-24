@@ -1,28 +1,8 @@
-import datetime
-
-from agents import Agent, Runner, function_tool
+from agents import Runner
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from src.utils.prompts import agent_prompt
-
-
-@function_tool
-def get_weather(city: str) -> str:
-    return f"El clima en {city} está soleado."
-
-
-@function_tool
-def get_current_time() -> str:
-    now = datetime.datetime.now()
-    return f"La hora actual es {now.strftime('%Y-%m-%d %H:%M:%S')}"
-
-
-agent = Agent(
-    name="Agente Legal",
-    instructions=agent_prompt,
-    tools=[get_weather, get_current_time],
-)
+from src.utils.agents import legal_agent
 
 router = APIRouter()
 
@@ -34,5 +14,5 @@ class ChatbotParams(BaseModel):
 
 @router.post("/chatbot")
 async def chatbot(request_body: ChatbotParams):
-    result = await Runner.run(agent, request_body.message)
+    result = await Runner.run(legal_agent, request_body.message)
     return {"response": result.final_output}
