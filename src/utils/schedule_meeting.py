@@ -10,6 +10,8 @@ from azure.identity.aio import ClientSecretCredential
 from dotenv import load_dotenv
 from twilio.rest import Client
 
+os.environ["REQUESTS_CA_BUNDLE"] = ""  # This can disable certificate verification
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
