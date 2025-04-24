@@ -35,6 +35,9 @@ SCOPES = ["https://graph.microsoft.com/.default"]
 
 async def get_access_token():
     """Get an access token for Microsoft Graph API"""
+    print("TENANT_ID", TENANT_ID)
+    print("CLIENT_ID", CLIENT_ID)
+    print("CLIENT_SECRET", CLIENT_SECRET)
     credentials = ClientSecretCredential(TENANT_ID, CLIENT_ID, CLIENT_SECRET)
     token = await credentials.get_token(*SCOPES)
     await credentials.close()  # Close the credential client
