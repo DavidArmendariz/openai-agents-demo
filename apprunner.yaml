@@ -14,9 +14,9 @@ run:
     - name: OPENAI_API_KEY
       value: "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"
     - name: TWILIO_ACCOUNT_SID
-      value: AC8c5f278f8159f90d8300734c2733b700
+      value: AC0b515ac59f0b6186c819936b185b3a56
     - name: TWILIO_AUTH_TOKEN
-      value: 2bc21e321a80ae30cb6f1c742a24786c
+      value: 8f936bbc1778be9ffb51a14b9317378e
     - name: TWILIO_WHATSAPP_NUMBER
       value: "+16502500943"
     - name: AZURE_CLIENT_ID
