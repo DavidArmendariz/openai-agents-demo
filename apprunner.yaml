@@ -20,8 +20,8 @@ run:
     - name: TWILIO_WHATSAPP_NUMBER
       value: "+16502500943"
     - name: AZURE_CLIENT_ID
-      value: e37e68ab-625c-4566-b89a-b9e95264bef1
+      value: "e37e68ab-625c-4566-b89a-b9e95264bef1"
     - name: AZURE_CLIENT_SECRET
-      value: Y1W8Q~RPdbpCERjrBBGdDF-cvbJcZosVfOEqLaCb
+      value: "Y1W8Q~RPdbpCERjrBBGdDF-cvbJcZosVfOEqLaCb"
     - name: AZURE_TENANT_ID
-      value: 008bfc95-78aa-42ce-bf9a-739da32aed6f
+      value: "008bfc95-78aa-42ce-bf9a-739da32aed6f"
