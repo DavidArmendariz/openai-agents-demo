@@ -5,16 +5,13 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Any
 
-import aiohttp
-from azure.identity.aio import ClientSecretCredential
+import requests
+from azure.identity import ClientSecretCredential
 from dotenv import load_dotenv
 from twilio.rest import Client
 
-os.environ["REQUESTS_CA_BUNDLE"] = ""  # This can disable certificate verification
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
 
 load_dotenv()
 
@@ -23,7 +20,6 @@ TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN", "")
 TWILIO_WHATSAPP_NUMBER = os.getenv("TWILIO_WHATSAPP_NUMBER", "")
 
 twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-
 
 # Azure AD App Credentials
 CLIENT_ID = os.getenv("AZURE_CLIENT_ID", "")
@@ -35,11 +31,11 @@ GRAPH_API_BASE_URL = "https://graph.microsoft.com/v1.0"
 SCOPES = ["https://graph.microsoft.com/.default"]
 
 
-async def get_access_token():
+def get_access_token():
     """Get an access token for Microsoft Graph API"""
+    # Using synchronous ClientSecretCredential
     credentials = ClientSecretCredential(TENANT_ID, CLIENT_ID, CLIENT_SECRET)
-    token = await credentials.get_token(*SCOPES)
-    await credentials.close()  # Close the credential client
+    token = credentials.get_token(*SCOPES)
     return token.token
 
 
@@ -60,10 +56,10 @@ def send_whatsapp_message(recipient, join_url):
 
 
 async def schedule_meeting(event_data) -> dict[str, Any]:
-    """Create a meeting using Microsoft Graph API with HTTP requests"""
+    """Create a meeting using Microsoft Graph API with requests"""
     try:
         # Get access token
-        access_token = await get_access_token()
+        access_token = get_access_token()
 
         # Extract meeting details
         start_time_str = event_data.get("start_datetime", "2025-04-07T15:00:00Z")
@@ -82,63 +78,62 @@ async def schedule_meeting(event_data) -> dict[str, Any]:
             "Content-Type": "application/json",
         }
 
-        connector = aiohttp.TCPConnector()
-        session = aiohttp.ClientSession(connector=connector)
+        # SSL verification options (set to False if you want to disable SSL verification)
+        verify_ssl = True
 
-        try:
-            # Get user's default calendar
-            calendar_url = f"{GRAPH_API_BASE_URL}/users/{user_id}/calendar"
-            async with session.get(calendar_url, headers=headers) as response:
-                if response.status != 200:
-                    return {"error": f"Failed to get calendar: {response.status}"}
+        # Get user's default calendar
+        calendar_url = f"{GRAPH_API_BASE_URL}/users/{user_id}/calendar"
+        response = requests.get(calendar_url, headers=headers, verify=verify_ssl)
 
-                calendar_data = await response.json()
-                calendar_id = calendar_data.get("id")
+        if response.status_code != 200:
+            return {"error": f"Failed to get calendar: {response.status_code}"}
 
-                if not calendar_id:
-                    return {"error": "Calendar ID not found"}
+        calendar_data = response.json()
+        calendar_id = calendar_data.get("id")
 
-                # Prepare event data
-                event_payload = {
-                    "subject": subject,
-                    "body": {
-                        "contentType": "HTML",
-                        "content": "Esta es una cita automatizada creada con Microsoft Graph API",
-                    },
-                    "start": {
-                        "dateTime": start_time_str,
-                        "timeZone": "Pacific Standard Time",
-                    },
-                    "end": {
-                        "dateTime": end_time_str,
-                        "timeZone": "Pacific Standard Time",
-                    },
-                    "location": {"displayName": "Oficinas de Australian Option"},
-                    "attendees": [],
-                    "isOnlineMeeting": True,
-                    "onlineMeetingProvider": "teamsForBusiness",
-                    "transactionId": str(uuid.uuid4()),
-                }
+        if not calendar_id:
+            return {"error": "Calendar ID not found"}
 
-                # Create the event
-                events_url = f"{GRAPH_API_BASE_URL}/users/{user_id}/calendars/{calendar_id}/events"
-                async with session.post(
-                    events_url, headers=headers, json=event_payload
-                ) as response:
-                    if response.status not in (200, 201):
-                        return {"error": f"Failed to create meeting: {response.status}"}
+        # Prepare event data
+        event_payload = {
+            "subject": subject,
+            "body": {
+                "contentType": "HTML",
+                "content": "Esta es una cita automatizada creada con Microsoft Graph API",
+            },
+            "start": {
+                "dateTime": start_time_str,
+                "timeZone": "Pacific Standard Time",
+            },
+            "end": {
+                "dateTime": end_time_str,
+                "timeZone": "Pacific Standard Time",
+            },
+            "location": {"displayName": "Oficinas de Australian Option"},
+            "attendees": [],
+            "isOnlineMeeting": True,
+            "onlineMeetingProvider": "teamsForBusiness",
+            "transactionId": str(uuid.uuid4()),
+        }
 
-                    result = await response.json()
-                    online_meeting = result.get("onlineMeeting")
+        # Create the event
+        events_url = (
+            f"{GRAPH_API_BASE_URL}/users/{user_id}/calendars/{calendar_id}/events"
+        )
+        response = requests.post(
+            events_url, headers=headers, json=event_payload, verify=verify_ssl
+        )
 
-                    for recipient in recipients:
-                        send_whatsapp_message(recipient, online_meeting["joinUrl"])
+        if response.status_code not in (200, 201):
+            return {"error": f"Failed to create meeting: {response.status_code}"}
 
-                    return {"online_meeting": online_meeting}
-        finally:
-            # Always close the session and connector, even if there's an error
-            await session.close()
-            await connector.close()
+        result = response.json()
+        online_meeting = result.get("onlineMeeting")
+
+        for recipient in recipients:
+            send_whatsapp_message(recipient, online_meeting["joinUrl"])
+
+        return {"online_meeting": online_meeting}
 
     except Exception as e:
         logger.error("Error scheduling meeting: %s", e, exc_info=True)
