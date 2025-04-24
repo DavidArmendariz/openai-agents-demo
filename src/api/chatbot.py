@@ -4,6 +4,8 @@ from agents import Agent, Runner, function_tool
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from src.utils.prompts import agent_prompt
+
 
 @function_tool
 def get_weather(city: str) -> str:
@@ -18,7 +20,7 @@ def get_current_time() -> str:
 
 agent = Agent(
     name="Agente Legal",
-    instructions="Eres un agente útil que responde en español.",
+    instructions=agent_prompt,
     tools=[get_weather, get_current_time],
 )
 
