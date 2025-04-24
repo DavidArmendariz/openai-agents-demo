@@ -1,11 +1,9 @@
 import datetime
 
-from agents import Agent, ModelSettings, enable_verbose_stdout_logging, function_tool
+from agents import Agent, ModelSettings, function_tool
 
 from src.utils.prompts import agent_prompt
 from src.utils.schedule_meeting import schedule_meeting
-
-enable_verbose_stdout_logging()
 
 
 @function_tool
@@ -49,7 +47,7 @@ legal_agent = Agent(
     name="Agente Legal",
     instructions=agent_prompt,
     tools=[get_current_time_tool, schedule_meeting_tool],
-    model_settings=ModelSettings(max_tokens=100),
+    model_settings=ModelSettings(max_tokens=300),
 )
 
 __all__ = ["legal_agent"]
