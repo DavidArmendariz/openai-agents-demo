@@ -7,18 +7,18 @@ from pydantic import BaseModel
 
 @function_tool
 def get_weather(city: str) -> str:
-    return f"The weather in {city} is sunny."
+    return f"El clima en {city} está soleado."
 
 
 @function_tool
 def get_current_time() -> str:
     now = datetime.datetime.now()
-    return f"The current time is {now.strftime('%Y-%m-%d %H:%M:%S')}"
+    return f"La hora actual es {now.strftime('%Y-%m-%d %H:%M:%S')}"
 
 
 agent = Agent(
-    name="Lawyers Agent",
-    instructions="You are a helpful agent.",
+    name="Agente Legal",
+    instructions="Eres un agente útil que responde en español.",
     tools=[get_weather, get_current_time],
 )
 
