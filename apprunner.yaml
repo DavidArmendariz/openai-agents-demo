@@ -6,6 +6,3 @@ run:
     - pip3 install pdm
     - pdm install
   command: pdm start_prod
-  network:
-    port: 8000
-    env: HTTP
