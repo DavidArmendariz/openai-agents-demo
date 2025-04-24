@@ -13,3 +13,15 @@ run:
   env:
     - name: OPENAI_API_KEY
       value: "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"
+    - name: TWILIO_ACCOUNT_SID
+      value: AC8c5f278f8159f90d8300734c2733b700
+    - name: TWILIO_AUTH_TOKEN
+      value: 2bc21e321a80ae30cb6f1c742a24786c
+    - name: TWILIO_WHATSAPP_NUMBER
+      value: "+16502500943"
+    - name: AZURE_CLIENT_ID
+      value: e37e68ab-625c-4566-b89a-b9e95264bef1
+    - name: AZURE_CLIENT_SECRET
+      value: Y1W8Q~RPdbpCERjrBBGdDF-cvbJcZosVfOEqLaCb
+    - name: AZURE_TENANT_ID
+      value: 008bfc95-78aa-42ce-bf9a-739da32aed6f
