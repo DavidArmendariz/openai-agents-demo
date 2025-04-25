@@ -3,7 +3,7 @@ runtime: python311
 run:
   runtime-version: 3.11
   pre-run:
-    - pip3 install pdm
+    - pip3 install --user pdm
     - pdm install
   command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --log-level info
   network:
