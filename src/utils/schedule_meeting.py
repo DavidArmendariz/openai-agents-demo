@@ -7,7 +7,10 @@ from typing import Any
 
 import requests
 from azure.identity import ClientSecretCredential
+from dotenv import load_dotenv
 from twilio.rest import Client
+
+load_dotenv()
 
 logger = logging.getLogger()
 
@@ -29,7 +32,8 @@ SCOPES = ["https://graph.microsoft.com/.default"]
 
 def get_access_token():
     """Get an access token for Microsoft Graph API"""
-    # Using synchronous ClientSecretCredential
+    # Using synchronous ClientSecretCredentiaL
+
     client_secret_credential = ClientSecretCredential(
         TENANT_ID, CLIENT_ID, CLIENT_SECRET
     )

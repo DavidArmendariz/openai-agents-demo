@@ -18,7 +18,7 @@ readme = "README.md"
 license = { text = "MIT" }
 
 [tool.pdm.scripts]
-start = "uvicorn src.main:app --reload"
+start = "uvicorn src.main:app --reload --log-level info"
 start_prod = "uvicorn src.main:app --host 0.0.0.0 --port 8000"
 
 [tool.pdm]
